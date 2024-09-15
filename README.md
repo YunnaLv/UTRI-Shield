@@ -1,3 +1,5 @@
-![image](https://github.com/user-attachments/assets/f482f45c-576e-4b0d-a727-5f8701f4cf58)# UTRAP
-code为本项目代码，video为本系统使用指南视频
-系统网址：http://152.136.33.166:8080/
+# UTRAP
+# 隐匿图盾：基于对抗样本的通用隐私图像抗检索系统
+## code：项目代码
+## video：系统使用指南视频
+## 系统网址：http://152.136.33.166:8080/
