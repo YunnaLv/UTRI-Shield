@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <title>深度哈希检索系统</title>
+    <!-- CSS files -->
+    <link href="{{ url_for('static', filename='dist/css/tabler.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='dist/css/tabler-flags.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='dist/css/tabler-payments.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='dist/css/tabler-vendors.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='dist/css/demo.min.css') }}" rel="stylesheet"/>
+    <style>
+      @import url('https://rsms.me/inter/inter.css');
+      :root {
+      	--tblr-font-sans-serif: 'Inter Var', -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
+      }
+      body {
+      	font-feature-settings: "cv03", "cv04", "cv11";
+      }
+    </style>
+
+  </head>
+  <body >
+    <script src="{{ url_for('static', filename='dist/js/demo-theme.min.js')}}"></script>
+    <div class="page">
+
+      <!-- Navbar -->
+      <header class="navbar navbar-expand-md navbar-light d-print-none">
+        <div class="container-xl">
+
+          <div class="navbar-nav flex-row order-md-last">
+            <div class="nav-item d-none d-md-flex me-3">
+            </div>
+            <div class="d-none d-md-flex">
+              <a href="?theme=dark" class="nav-link px-0 hide-theme-dark" title="Enable dark mode" data-bs-toggle="tooltip"
+		   data-bs-placement="bottom">
+                <!-- Download SVG icon from http://tabler-icons.io/i/moon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" /></svg>
+              </a>
+              <a href="?theme=light" class="nav-link px-0 hide-theme-light" title="Enable light mode" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                <!-- Download SVG icon from http://tabler-icons.io/i/sun -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7" /></svg>
+              </a>
+            </div>
+            <!--用户头像和id-->
+            <div class="nav-item">
+              <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open user menu">
+                <span class="avatar avatar-sm" style="background-image: url(../static/static/avatars/dog.jpg)"></span>
+                <div class="d-none d-xl-block ps-2">
+                  <div>李华</div>
+                  <div class="mt-1 small text-muted">{{ user_id }}</div>
+                </div>
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </header>
+
+{#      </header>#}
+      <!--导览-->
+      <header class="navbar-expand-md">
+        <div class="collapse navbar-collapse" id="navbar-menu">
+          <div class="navbar navbar-light">
+            <div class="container-xl">
+              <ul class="navbar-nav">
+
+                <li class="nav-item">
+                  <a class="nav-link" href="/generate_noise" >
+                    <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/background -->
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-background"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 8l4 -4" /><path d="M14 4l-10 10" /><path d="M4 20l16 -16" /><path d="M20 10l-10 10" /><path d="M20 16l-4 4" /></svg>
+                    </span>
+                    <span class="nav-link-title">
+                      扰动训练
+                    </span>
+                  </a>
+                </li>
+
+                <li class="nav-item active">
+                  <a class="nav-link" href="/retrieval_single" >
+                    <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/polaroid -->
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-polaroid"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z" /><path d="M4 16l16 0" /><path d="M4 12l3 -3c.928 -.893 2.072 -.893 3 0l4 4" /><path d="M13 12l2 -2c.928 -.893 2.072 -.893 3 0l2 2" /><path d="M14 7l.01 0" /></svg>
+                    </span>
+                    <span class="nav-link-title">
+                      单图检索
+                    </span>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a class="nav-link" href="/retrieval_multi">
+                    <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/slideshow -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-slideshow"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l.01 0" /><path d="M3 3m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z" /><path d="M3 13l4 -4a3 5 0 0 1 3 0l4 4" /><path d="M13 12l2 -2a3 5 0 0 1 3 0l3 3" /><path d="M8 21l.01 0" /><path d="M12 21l.01 0" /><path d="M16 21l.01 0" /></svg>                    </span>
+                    <span class="nav-link-title">
+                      多图检索
+                    </span>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a class="nav-link" href="/help" >
+                    <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/help -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-help"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 17l0 .01" /><path d="M12 13.5a1.5 1.5 0 0 1 1 -1.5a2.6 2.6 0 1 0 -3 -4" /></svg>                    </span>
+                    <span class="nav-link-title">
+                      帮助
+                    </span>
+                  </a>
+                </li>
+
+              </ul>
+            </div>
+          </div>
+        </div>
+      </header>
+
+
+
+      <div class="page-wrapper">
+        <!-- Page header -->
+        <div class="page-header d-print-none">
+          <div class="container-xl">
+            <div class="row g-2 align-items-center">
+              <div class="col">
+                <h2 class="page-title">
+                  单张图像添加扰动
+                </h2>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Page body -->
+        <div class="page-body">
+          <div class="container-xl">
+            <div class="row">
+              <div class="col-12 col-md-6 col-lg">
+                <div class="mb-4">
+                  <div class="row row-cards">
+
+                    <!-- change  -->
+                    <div class="col-7">
+                      <div class="card card-sm">
+                        <div class="card-status-start bg-success"></div>
+                        <div class="card-body col-12">
+                          <form action="/img_upload" enctype='multipart/form-data' method='POST'>
+                            <div class="row">
+                              <h3 class="card-title">上传待保护的人脸图像</h3>
+                                <div class="col-md-4">
+                                    <img class="card-img" src="data:;base64,{{ one_org_img }}" alt=""/>
+                                    <div class="mb-3">
+                                        <label for="img_upload" class="form-label"></label>
+                                        <input type="file" class="form-control" id="img_upload" name="img_upload" accept="image/jpeg, image/png, image/jpg" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-footer text-start">
+                                        <div class="mb-3">
+                                            <label class="form-label">选择扰动类型（DEFAULT: CSQ-ResNet50）</label>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="noise_type" id="user_upload_radio" value="user_upload">
+                                                <label class="form-check-label" for="user_upload_radio">上传自行训练的通用扰动</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="noise_type" id="prvd_noise_radio" value="prvd_noise">
+                                                <label class="form-check-label" for="prvd_noise_radio">选择系统提供的通用扰动</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3" id="user_upload_section" style="display: none;">
+                                            <label for="user_upload_user" class="form-label">请上传.npy格式文件</label>
+                                            <input type="file" class="form-control" id="user_upload_user" name="user_upload_user"/>
+                                        </div>
+                                        <div class="mb-3" id="prvd_noise_section" style="display: none;">
+                                            <label for="prvd_noise" class="form-label">请选择要使用的扰动</label>
+                                            <input class="form-control" list="provided_noise" id="prvd_noise" name="prvd_noise"
+                                                   placeholder="DEFAULT: CSQ-ResNet50">
+                                            <datalist id="provided_noise">
+                                                <option value="CSQ-ResNet34"></option>
+                                                <option value="CSQ-ResNet50"></option>
+                                                <option value="CSQ-Vgg16"></option>
+                                                <option value="CSQ-Vgg19"></option>
+                                            </datalist>
+                                        </div>
+                                        <div class="mb-3">
+                                        <div class="form-label">选择检索系统</div>
+                                            <input class="form-control" list="retrieval_system" id="system" name="system"
+                                                   placeholder="DEFAULT: CSQ-ResNet50-64"/>
+                                            <datalist id="retrieval_system">
+                                                <option value="CSQ-ResNet34-64"></option>
+                                                <option value="CSQ-ResNet50-64"></option>
+                                                <option value="CSQ-Vgg16-64"></option>
+                                                <option value="CSQ-Vgg19-64"></option>
+                                                <option value="CSQ-ResNet34-32"></option>
+                                                <option value="CSQ-ResNet50-32"></option>
+                                                <option value="CSQ-Vgg16-32"></option>
+                                                <option value="CSQ-Vgg19-32"></option>
+                                                <option value="HashNet-ResNet50-64"></option>
+                                                <option value="HashNet-Vgg16-64"></option>
+                                            </datalist>
+                                        </div>
+
+                                        <div class="mb-3">
+                                        <div class="form-label">选择压缩因子</div>
+                                            <input class="form-control" list="retrieval_QF" id="QF" name="QF"
+                                                   placeholder="DEFAULT: 50"/>
+                                            <datalist id="retrieval_QF">
+                                                <option value="30"></option>
+                                                <option value="40"></option>
+                                                <option value="50"></option>
+                                                <option value="60"></option>
+                                                <option value="70"></option>
+                                                <option value="80"></option>
+                                                <option value="90"></option>
+                                            </datalist>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="mb-3 text-md-center">
+                              <button type="submit" class="btn btn-primary">获取受保护图像并检索相似图像</button>
+                            </div>
+                          </form>
+                        </div>
+
+                      </div>
+                    </div>
+
+                    <div class="col-5">
+                      <div class="card card-sm">
+                        <div class="card-status-start bg-danger"></div>
+                        <div class="row">
+                            <div class="card-body col-6">
+                              <h3 class="card-title">获取压缩前受保护图像</h3>
+                              <img class="card-img" src="data:;base64,{{ adv_img_nojpeg }}" alt=""/>
+                              <div class="card-footer text-end">
+                                  <form action="/download_one_img_nojpeg" enctype='multipart/form-data' method='POST'>
+                                      <div class="card-btn">
+                                          {% if download_one_img_nojpeg == 'N' %}
+                                              <button type="submit" class="btn btn-primary disabled ">点击下载图像</button>
+                                          {% endif %}
+                                          {% if download_one_img_nojpeg == 'Y' %}
+                                              <button type="submit" class="btn btn-primary">点击下载图像</button>
+                                          {% endif %}
+                                      </div>
+                                  </form>
+                              </div>
+                            </div>
+                            <div class="card-body col-6">
+                              <h3 class="card-title">获取压缩后受保护图像</h3>
+                              <img class="card-img" src="data:;base64,{{ adv_img_jpeg }}" alt=""/>
+                              <div class="card-footer text-end">
+                                  <form action="/download_one_img_jpeg" enctype='multipart/form-data' method='POST'>
+                                      <div class="card-btn">
+                                          {% if download_one_img_jpeg == 'N' %}
+                                              <button type="submit" class="btn btn-primary disabled ">点击下载图像</button>
+                                          {% endif %}
+                                          {% if download_one_img_jpeg == 'Y' %}
+                                              <button type="submit" class="btn btn-primary">点击下载图像</button>
+                                          {% endif %}
+                                      </div>
+                                  </form>
+                              </div>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+
+{#                    <div class="col-2">#}
+{#                      <div class="card card-sm">#}
+{#                        <div class="card-status-start bg-danger"></div>#}
+{#                        <div class="card-body">#}
+{#                          <h3 class="card-title">在此获取您的受保护人脸图像</h3>#}
+{#                          <img class="card-img" src="data:;base64,{{ adv_img_shot }}" alt=""/>#}
+{#                          <div class="card-footer text-end">#}
+{#                              <form action="/download_one_img" enctype='multipart/form-data' method='POST'>#}
+{#                                  <div class="card-btn">#}
+{#                                      {% if download_one_img == 'N' %}#}
+{#                                          <button type="submit" class="btn btn-primary disabled ">点击下载图像</button>#}
+{#                                      {% endif %}#}
+{#                                      {% if download_one_img == 'Y' %}#}
+{#                                          <button type="submit" class="btn btn-primary">点击下载图像</button>#}
+{#                                      {% endif %}#}
+{#                                  </div>#}
+{#                              </form>#}
+{#                          </div>#}
+{##}
+{#                        </div>#}
+{#                      </div>#}
+{#                    </div>#}
+
+                    <div class="col-12">
+                      {% if download_one_img_nojpeg == 'Y' %}
+                      <div class="card card-sm card-active">
+                        <div class="card-status-start bg-primary"></div>
+                        <div class="card-body">
+                          <h3 class="card-title">结果信息</h3>
+                              <div class="row text-center">
+                                <div class="card-footer col-3">
+                                    <h1 class="text-muted"><span class="badge bg-blue col-12">压缩前原始mAP</span></h1>
+                                    <h1 class="text-muted">{{ org_mAP_nojpeg }}</h1>
+                                </div>
+
+                                <div class="card-footer col-3">
+                                    <h1 class="text-muted"><span class="badge bg-azure col-12">压缩前对抗mAP</span></h1>
+                                    <h1 class="text-muted">{{ adv_mAP_nojpeg }}</h1>
+                                </div>
+
+                                <div class="card-footer col-3">
+                                    <h1 class="text-muted"><span class="badge bg-cyan col-12">压缩后原始mAP</span></h1>
+                                    <h1 class="text-muted">{{ org_mAP_jpeg }}</h1>
+                                </div>
+                                <div class="card-footer col-3">
+                                    <h1 class="text-muted"><span class="badge bg-bg-indigo col-12">压缩后对抗mAP</span></h1>
+                                    <h1 class="text-muted">{{ adv_mAP_jpeg }}</h1>
+                                </div>
+                              </div>
+
+                              <div class="card-footer">
+                                <div class="row">
+                                  <div class="col-6">
+                                    <h3 class="card-title text-md-center">压缩前抗检索结果可视化</h3>
+                                      <div class="row row-0">
+                                          {% for i in range(imgs_nojpeg|length) %}
+                                              <div class="col-3">
+                                                <div class="col-10 mb-3">
+                                                    <a href="data:;base64,{{ imgs_nojpeg[i] }}" download="image.jpg">
+                                                        <img class="card-img" src="data:;base64,{{ imgs_nojpeg[i] }}" alt="Image">
+                                                    </a>
+    {#                                                <div class="card-footer text-end">{{ dist_nojpeg[i] }}</div>#}
+                                                </div>
+                                              </div>
+    {#                                              <div class="card-footer text-end">{{ dist_nojpeg[i] }}</div>#}
+                                          {% endfor %}
+{#                                          <div class="col-6">#}
+{#                                              <div class="card-status-start bg-green"></div>#}
+{#                                              <div class="card-body">#}
+{#                                                  <h3 class="card-title">攻击前身份</h3>#}
+{#                                                  <h4 class="card-text">标签：{{ label_1 }}</h4>#}
+{#                                                  <h4 class="card-text">姓名：Alice</h4>#}
+{#                                              </div>#}
+{#                                          </div>#}
+                                      </div>
+                                  </div>
+
+                                  <div class="col-6">
+                                    <h3 class="card-title text-md-center">压缩后抗检索结果可视化</h3>
+                                      <div class="row row-0">
+                                          {% for i in range(imgs_jpeg|length) %}
+                                              <div class="col-3">
+                                                <div class="col-10 mb-3">
+                                                    <a href="data:;base64,{{ imgs_jpeg[i] }}" download="image.jpg">
+                                                        <img class="card-img" src="data:;base64,{{ imgs_jpeg[i] }}" alt="Image">
+                                                    </a>
+    {#                                                <div class="card-footer text-end">{{ dist_jpeg[i] }}</div>#}
+                                                </div>
+                                              </div>
+    {#                                              <div class="card-footer text-end">{{ dist_jpeg[i] }}</div>#}
+                                          {% endfor %}
+{#                                          <div class="col-6">#}
+{#                                              <div class="card-status-start bg-green"></div>#}
+{#                                              <div class="card-body">#}
+{#                                                  <h3 class="card-title">攻击前身份</h3>#}
+{#                                                  <h4 class="card-text">标签：{{ label_1 }}</h4>#}
+{#                                                  <h4 class="card-text">姓名：Alice</h4>#}
+{#                                              </div>#}
+{#                                          </div>#}
+                                      </div>
+                                  </div>
+{#                                  <div class="card card-sm col-6">#}
+{#                                      <div class="row row-0">#}
+{#                                          <div class="col-6">#}
+{#                                              <img class="card-img" src="data:;base64,{{ label_2_pic }}" alt=""/>#}
+{#                                          </div>#}
+{#                                          <div class="col-6">#}
+{#                                              <div class="card-status-start bg-danger"></div>#}
+{#                                              <div class="card-body">#}
+{#                                                  <h3 class="card-title">攻击后身份</h3>#}
+{#                                                  <h4 class="card-text">标签：{{ label_2 }}</h4>#}
+{#                                                  {% if label_2 == label_1 %}<h4 class="card-text">姓名：Alice</h4>{% endif %}#}
+{#                                                  {% if label_2 != label_1 %}<h4 class="card-text">姓名：Mary</h4>{% endif %}#}
+{#                                              </div>#}
+{#                                          </div>#}
+{#                                      </div>#}
+{#                                  </div>#}
+{#                                </div>#}
+{#                              </div>#}
+
+                        </div>
+                      </div>
+                      {% endif %}
+                      {% if download_one_img_nojpeg != 'Y' %}
+                        <div class="card card-sm ">
+                        <div class="card-status-start bg-primary"></div>
+                            <div class="card-stamp">
+                                <div class="card-stamp-icon bg-yellow">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 5a2 2 0 0 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg>
+                                </div>
+                            </div>
+                        <div class="card-body">
+                          <h3 class="card-title">结果信息</h3>
+                        </div>
+                        </div>
+                      {% endif %}
+                    </div>
+                    <!-- change  -->
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+      </div>
+    </div>
+  <!-- Libs JS -->
+  <script src="{{ url_for('static', filename='dist/libs/nouislider/dist/nouislider.min.js')}}" defer></script>
+  <script src="{{ url_for('static', filename='dist/libs/litepicker/dist/litepicker.js')}}" defer></script>
+  <script src="{{ url_for('static', filename='dist/libs/tom-select/dist/js/tom-select.base.min.js')}}" defer></script>
+  <!-- Tabler Core -->
+  <script src="{{ url_for('static', filename='dist/js/tabler.min.js')}}" defer></script>
+  <script src="{{ url_for('static', filename='dist/js/demo.min.js')}}" defer></script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	 window.noUiSlider && (noUiSlider.create(document.getElementById('range-simple'), {
+    			  start: 20,
+    			  connect: [true, false],
+    			  step: 10,
+    			  range: {
+    				  min: 0,
+    				  max: 100
+    			  }
+    	 }));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	 window.noUiSlider && (noUiSlider.create(document.getElementById('range-connect'), {
+    			  start: [60, 90],
+    			  connect: [false, true, false],
+    			  step: 10,
+    			  range: {
+    				  min: 0,
+    				  max: 100
+    			  }
+    	 }));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	 window.noUiSlider && (noUiSlider.create(document.getElementById('range-color'), {
+    			  start: 40,
+    			  connect: [true, false],
+    			  step: 10,
+    			  range: {
+    				  min: 0,
+    				  max: 100
+    			  }
+    	 }));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	window.Litepicker && (new Litepicker({
+    		element: document.getElementById('datepicker-default'),
+    		buttonText: {
+    			previousMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" /></svg>`,
+    			nextMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>`,
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	window.Litepicker && (new Litepicker({
+    		element: document.getElementById('datepicker-icon'),
+    		buttonText: {
+    			previousMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" /></svg>`,
+    			nextMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>`,
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	window.Litepicker && (new Litepicker({
+    		element: document.getElementById('datepicker-icon-prepend'),
+    		buttonText: {
+    			previousMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" /></svg>`,
+    			nextMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>`,
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	window.Litepicker && (new Litepicker({
+    		element: document.getElementById('datepicker-inline'),
+    		buttonText: {
+    			previousMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" /></svg>`,
+    			nextMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>`,
+    		},
+    		inlineMode: true,
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-tags'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-tags-advanced'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-users'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-optgroups'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-people'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-countries'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-labels'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-countries-valid'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-countries-invalid'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+    	let sliderTriggerList = [].slice.call(document.querySelectorAll("[data-slider]"));
+    	sliderTriggerList.map(function (sliderTriggerEl) {
+    		let options = {};
+    		if (sliderTriggerEl.getAttribute("data-slider")) {
+    			options = JSON.parse(sliderTriggerEl.getAttribute("data-slider"));
+    		}
+    		let slider = noUiSlider.create(sliderTriggerEl, options);
+    		if (options['js-name']) {
+    			window[options['js-name']] = slider;
+    		}
+    	});
+    });
+  </script>
+  <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var ckptUploadSection = document.getElementById('user_upload_section');
+            var prvdNoiseSection = document.getElementById('prvd_noise_section');
+            var ckptUploadRadio = document.getElementById('user_upload_radio');
+            var prvdNoiseRadio = document.getElementById('prvd_noise_radio');
+            {#print(ckptUploadSection, prvdNoiseSection, ckptUploadRadio, prvdNoiseRadio)#}
+            // 初始状态下，根据用户选择显示相关部分
+            if (ckptUploadRadio.checked) {
+                ckptUploadSection.style.display = 'block';
+                prvdNoiseSection.style.display = 'none';
+            } else if (prvdNoiseRadio.checked) {
+                ckptUploadSection.style.display = 'none';
+                prvdNoiseSection.style.display = 'block';
+            }
+
+            // 监听扰动类型选择变化事件
+            ckptUploadRadio.addEventListener('change', function() {
+                if (this.checked) {
+                    ckptUploadSection.style.display = 'block';
+                    prvdNoiseSection.style.display = 'none';
+                }
+            });
+
+            prvdNoiseRadio.addEventListener('change', function() {
+                if (this.checked) {
+                    ckptUploadSection.style.display = 'none';
+                    prvdNoiseSection.style.display = 'block';
+                }
+            });
+        });
+    </script>
+{#    <script>#}
+{#        const images = [#}
+{#            'data:image/png;base64,{{ base64_encoded_image1 }}', // 图片1的base64编码#}
+{#            'data:image/png;base64,{{ base64_encoded_image2 }}', // 图片2的base64编码#}
+{#            // 添加更多图片的base64编码...#}
+{#        ];#}
+{##}
+{#        let currentIndex = 0;#}
+{#        const displayedImage = document.getElementById('displayedImage');#}
+{#        const downloadBtn = document.getElementById('downloadBtn');#}
+{#        const downloadForm = document.getElementById('downloadForm');#}
+{##}
+{#        function showImage(index) {#}
+{#            displayedImage.src = images[index];#}
+{#            downloadForm.action = "/download_one_img"; // 设置下载的地址，根据需要调整#}
+{#            downloadBtn.classList.add('disabled');#}
+{#        }#}
+{##}
+{#        function enableDownloadButton() {#}
+{#            downloadBtn.classList.remove('disabled');#}
+{#        }#}
+{##}
+{#        function showNextImage() {#}
+{#            currentIndex = (currentIndex + 1) % images.length;#}
+{#            showImage(currentIndex);#}
+{#        }#}
+{##}
+{#        function showPreviousImage() {#}
+{#            currentIndex = (currentIndex - 1 + images.length) % images.length;#}
+{#            showImage(currentIndex);#}
+{#        }#}
+{##}
+{#        document.addEventListener('DOMContentLoaded', function() {#}
+{#            showImage(currentIndex);#}
+{##}
+{#            const imageCard = document.getElementById('imageCard');#}
+{#            let touchStartX = 0;#}
+{##}
+{#            imageCard.addEventListener('touchstart', function(e) {#}
+{#                touchStartX = e.changedTouches[0].screenX;#}
+{#            });#}
+{##}
+{#            imageCard.addEventListener('touchend', function(e) {#}
+{#                const touchEndX = e.changedTouches[0].screenX;#}
+{#                if (touchEndX < touchStartX) {#}
+{#                    // 向左滑动，显示下一张图片#}
+{#                    showNextImage();#}
+{#                } else if (touchEndX > touchStartX) {#}
+{#                    // 向右滑动，显示上一张图片#}
+{#                    showPreviousImage();#}
+{#                }#}
+{#            });#}
+{#        });#}
+{#    </script>#}
+</body>
+</html>

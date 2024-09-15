@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <title>用户登录</title>
+    <!-- CSS files -->
+    <link href="{{ url_for('static', filename='dist/css/tabler.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='dist/css/tabler-flags.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='dist/css/tabler-payments.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='dist/css/tabler-vendors.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='dist/css/demo.min.css') }}" rel="stylesheet"/>
+    <style>
+      @import url('https://rsms.me/inter/inter.css');   <!-- Inter字体 -->
+      :root {
+      	--tblr-font-sans-serif: 'Inter Var', -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
+      }
+      body {
+      	font-feature-settings: "cv03", "cv04", "cv11";
+      }
+    </style>
+  </head>
+
+  <body >
+    <script src="{{ url_for('static', filename='dist/js/demo-theme.min.js')}}"></script>
+    <div class="page">
+      <div class="page-wrapper">
+        <!-- Page header -->
+
+        <!-- Page body -->
+        <div class="page-body">
+          <div class="container-xl">
+            <div class="row">
+              <div class="col-12 col-md-6 col-lg">
+                <h1 class="mb-3">隐匿图盾：基于对抗样本的通用隐私图像抗检索系统</h1>
+                <div class="mb-4">
+                  <div class="row row-cards">
+
+                    <div class="col-6">
+                      <div class="card">
+                        <div class="card-body">
+                            <!-- 图像 -->
+                            <img src={{ url_for('static', filename='BK_SHOT.png') }} alt=""/>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="card bg-primary text-primary-fg">
+                            <div class="card-stamp">
+                                <div class="card-stamp-icon bg-white text-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z" /></svg>
+                                </div>
+                            </div>
+
+                            <div class="card-body row">
+                                <h1 class="col-12"></h1>
+                                <h1 class="col-12"></h1>
+                                <h1 class="col-12"></h1>
+                                <h1 class="col-12"></h1>
+                                <h1 class="col-12"></h1>
+                                <h1 class="col-12"></h1>
+                                <h1 class="col-5"></h1>
+                                <h1 class="title col-5">用户登录</h1>
+                                <h1 class="col-2"></h1>
+                                <form class="card" action="/" method="post">
+                                    <div class="card-header">
+                                        <h3 class="card-title" style="color: #0f141e">用户资料卡</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <div class="row">
+                                                <div class="col-auto">
+                                                    <span class="avatar avatar-md" style="background-image: url(../static/static/avatars/dog.jpg)"></span>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="mb-3">
+                                                        <label></label>
+                                                        <label style="color: #0f141e" class="form-label">用户名: 李华</label>
+                                                        <label style="color: #0f141e" class="form-label">其他信息: ......</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label style="color: #0f141e" class="form-label">账号</label>
+                                            <input name="user_id" id="user_id" style="color: #0f141e" class="form-control" placeholder="请输入您的账号" value="10242048@qq.com">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label style="color: #0f141e" class="form-label">密码</label>
+                                            <input style="color: #0f141e" type="password" class="form-control" value="password">
+                                        </div>
+                                    </div>
+                                    <div class="card-footer text-center">
+                                        <button type="submit" class="btn btn-primary">登 录</button>
+                                    </div>
+                                </form>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+
+                  </div>
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
+  </div>
+  <!-- Libs JS -->
+  <script src="{{ url_for('static', filename='dist/libs/nouislider/dist/nouislider.min.js')}}" defer></script>
+  <script src="{{ url_for('static', filename='dist/libs/litepicker/dist/litepicker.js')}}" defer></script>
+  <script src="{{ url_for('static', filename='dist/libs/tom-select/dist/js/tom-select.base.min.js')}}" defer></script>
+  <!-- Tabler Core -->
+  <script src="{{ url_for('static', filename='dist/js/tabler.min.js')}}" defer></script>
+  <script src="{{ url_for('static', filename='dist/js/demo.min.js')}}" defer></script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	 window.noUiSlider && (noUiSlider.create(document.getElementById('range-simple'), {
+    			  start: 20,
+    			  connect: [true, false],
+    			  step: 10,
+    			  range: {
+    				  min: 0,
+    				  max: 100
+    			  }
+    	 }));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	 window.noUiSlider && (noUiSlider.create(document.getElementById('range-connect'), {
+    			  start: [60, 90],
+    			  connect: [false, true, false],
+    			  step: 10,
+    			  range: {
+    				  min: 0,
+    				  max: 100
+    			  }
+    	 }));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	 window.noUiSlider && (noUiSlider.create(document.getElementById('range-color'), {
+    			  start: 40,
+    			  connect: [true, false],
+    			  step: 10,
+    			  range: {
+    				  min: 0,
+    				  max: 100
+    			  }
+    	 }));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	window.Litepicker && (new Litepicker({
+    		element: document.getElementById('datepicker-default'),
+    		buttonText: {
+    			previousMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" /></svg>`,
+    			nextMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>`,
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	window.Litepicker && (new Litepicker({
+    		element: document.getElementById('datepicker-icon'),
+    		buttonText: {
+    			previousMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" /></svg>`,
+    			nextMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>`,
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	window.Litepicker && (new Litepicker({
+    		element: document.getElementById('datepicker-icon-prepend'),
+    		buttonText: {
+    			previousMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" /></svg>`,
+    			nextMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>`,
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	window.Litepicker && (new Litepicker({
+    		element: document.getElementById('datepicker-inline'),
+    		buttonText: {
+    			previousMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" /></svg>`,
+    			nextMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>`,
+    		},
+    		inlineMode: true,
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-tags'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-tags-advanced'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-users'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-optgroups'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-people'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-countries'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-labels'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-countries-valid'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-countries-invalid'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+    	let sliderTriggerList = [].slice.call(document.querySelectorAll("[data-slider]"));
+    	sliderTriggerList.map(function (sliderTriggerEl) {
+    		let options = {};
+    		if (sliderTriggerEl.getAttribute("data-slider")) {
+    			options = JSON.parse(sliderTriggerEl.getAttribute("data-slider"));
+    		}
+    		let slider = noUiSlider.create(sliderTriggerEl, options);
+    		if (options['js-name']) {
+    			window[options['js-name']] = slider;
+    		}
+    	});
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1455 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <title>深度哈希检索系统</title>
+    <!-- CSS files -->
+    <link href="{{ url_for('static', filename='dist/css/tabler.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='dist/css/tabler-flags.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='dist/css/tabler-payments.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='dist/css/tabler-vendors.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='dist/css/demo.min.css') }}" rel="stylesheet"/>
+    <style>
+      @import url('https://rsms.me/inter/inter.css');
+      :root {
+      	--tblr-font-sans-serif: 'Inter Var', -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
+      }
+      body {
+      	font-feature-settings: "cv03", "cv04", "cv11";
+      }
+    </style>
+
+  </head>
+  <body >
+    <script src="{{ url_for('static', filename='dist/js/demo-theme.min.js')}}"></script>
+    <div class="page">
+
+      <!-- Navbar -->
+      <header class="navbar navbar-expand-md navbar-light d-print-none">
+        <div class="container-xl">
+
+          <div class="navbar-nav flex-row order-md-last">
+            <div class="nav-item d-none d-md-flex me-3">
+            </div>
+            <div class="d-none d-md-flex">
+              <a href="?theme=dark" class="nav-link px-0 hide-theme-dark" title="Enable dark mode" data-bs-toggle="tooltip"
+		   data-bs-placement="bottom">
+                <!-- Download SVG icon from http://tabler-icons.io/i/moon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" /></svg>
+              </a>
+              <a href="?theme=light" class="nav-link px-0 hide-theme-light" title="Enable light mode" data-bs-toggle="tooltip" data-bs-placement="bottom">
+                <!-- Download SVG icon from http://tabler-icons.io/i/sun -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7" /></svg>
+              </a>
+            </div>
+            <!--用户头像和id-->
+            <div class="nav-item">
+              <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open user menu">
+                <span class="avatar avatar-sm" style="background-image: url(../static/static/avatars/dog.jpg)"></span>
+                <div class="d-none d-xl-block ps-2">
+                  <div>李华</div>
+                  <div class="mt-1 small text-muted">{{ user_id }}</div>
+                </div>
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </header>
+
+      </header>
+      <!--导览-->
+      <header class="navbar-expand-md">
+        <div class="collapse navbar-collapse" id="navbar-menu">
+          <div class="navbar navbar-light">
+            <div class="container-xl">
+              <ul class="navbar-nav">
+
+                <li class="nav-item">
+                  <a class="nav-link" href="/generate_noise" >
+                    <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/background -->
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-background"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 8l4 -4" /><path d="M14 4l-10 10" /><path d="M4 20l16 -16" /><path d="M20 10l-10 10" /><path d="M20 16l-4 4" /></svg>
+                    </span>
+                    <span class="nav-link-title">
+                      扰动训练
+                    </span>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a class="nav-link" href="/retrieval_single" >
+                    <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/polaroid -->
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-polaroid"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z" /><path d="M4 16l16 0" /><path d="M4 12l3 -3c.928 -.893 2.072 -.893 3 0l4 4" /><path d="M13 12l2 -2c.928 -.893 2.072 -.893 3 0l2 2" /><path d="M14 7l.01 0" /></svg>
+                    </span>
+                    <span class="nav-link-title">
+                      单图检索
+                    </span>
+                  </a>
+                </li>
+
+                <li class="nav-item active">
+                  <a class="nav-link" href="/retrieval_multi">
+                    <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/slideshow -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-slideshow"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l.01 0" /><path d="M3 3m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z" /><path d="M3 13l4 -4a3 5 0 0 1 3 0l4 4" /><path d="M13 12l2 -2a3 5 0 0 1 3 0l3 3" /><path d="M8 21l.01 0" /><path d="M12 21l.01 0" /><path d="M16 21l.01 0" /></svg>                    </span>
+                    <span class="nav-link-title">
+                      多图检索
+                    </span>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a class="nav-link" href="/help" >
+                    <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/help -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-help"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 17l0 .01" /><path d="M12 13.5a1.5 1.5 0 0 1 1 -1.5a2.6 2.6 0 1 0 -3 -4" /></svg>                    </span>
+                    <span class="nav-link-title">
+                      帮助
+                    </span>
+                  </a>
+                </li>
+
+              </ul>
+            </div>
+          </div>
+        </div>
+      </header>
+
+
+      <div class="page-wrapper">
+        <!-- Page header -->
+        <div class="page-header d-print-none">
+          <div class="container-xl">
+            <div class="row g-2 align-items-center">
+              <div class="col-1">
+                <h2 class="page-title">
+                  抗检索测试
+                </h2>
+              </div>
+                <div class="col-11" style="margin-top:12px">
+                （由于挂载的外网服务器带宽为4Mbps，因此结果加载需等待）
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Page body -->
+        <div class="page-body">
+          <div class="container-xl">
+            <div class="row row-cards">
+
+            <div class="col-lg-6">
+                <div class="row row-cards">
+                    <div class="col-12">
+                        <form class="card card-stacked" action="/noise" enctype="multipart/form-data" method="POST" id="noise-form">
+                            <div class="card-header">
+                                <h3 class="card-title">为待检索图像添加训练好的通用扰动</h3>
+                            </div>
+                            <div class="ribbon ribbon-top bg-red">①</div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="form-label">选择扰动类型（DEFAULT: CSQ-ResNet50）</div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="noise_type_multi" id="user_upload_radio_multi" value="user_upload_multi">
+                                        <label class="form-check-label" for="user_upload_radio_multi">上传自行训练的通用扰动</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="noise_type_multi" id="prvd_noise_radio_multi" value="prvd_noise_multi">
+                                        <label class="form-check-label" for="prvd_noise_radio_multi">选择系统提供的通用扰动</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3" id="user_upload_section_multi" style="display: none;">
+                                    <div class="form-label">请上传.npy格式文件</div>
+                                    <input type="file" class="form-control" id="user_upload_multi" name="user_upload_multi"/>
+                                </div>
+                                <div class="mb-3" id="prvd_noise_section_multi" style="display: none;">
+                                    <div class="form-label">请选择要使用的扰动</div>
+                                    <input class="form-control" list="provided_noise_multi" id="prvd_noise_multi" name="prvd_noise_multi"
+                                           placeholder="DEFAULT: CSQ-ResNet50"/>
+                                    <datalist id="provided_noise_multi">
+                                        <option value="CSQ-ResNet34"></option>
+                                        <option value="CSQ-ResNet50"></option>
+                                        <option value="CSQ-Vgg16"></option>
+                                        <option value="CSQ-Vgg19"></option>
+                                        <option value="HashNet-ResNet50"></option>
+                                        <option value="HashNet-Vgg16"></option>
+                                    </datalist>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-label">上传待检索图像
+                                      <a href="/download_test_multi">点击下载参考样例</a>
+                                    </div>
+                                    <input type="file" class="form-control" id="img_zip_upload" name="img_zip_upload" required/>
+                                </div>
+                            </div>
+                            <div class="card-footer text-md-center">
+{#                                <div class="row row-0">#}
+                                <button type="submit" class="btn btn-primary">一键保护</button>
+                                {% if noise_ok == 'Y' %}
+                                    <div class="text-end">
+                                        <a href="/download_dataset">点击下载图像</a>
+                                    </div>
+                                {% endif %}
+{#                                </div>#}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-6">
+                <div class="row row-cards">
+                <div class="col-12">
+                  <form class="card card-stacked" action="/retrieval" enctype='multipart/form-data' method='POST'>
+                    <div class="card-header">
+                      <h3 class="card-title">深度哈希检索</h3>
+                    </div>
+                      <div class="ribbon ribbon-top bg-red">②</div>
+                    <div class="card-body">
+                      <div class="mb-3">
+                        <div class="form-label">选择检索系统（白盒）</div>
+                        <input class="form-control" list="retrieval_system_white" id="system_white" name="system_white"
+                               placeholder="DEFAULT: CSQ-ResNet50-64"/>
+                        <datalist id="retrieval_system_white">
+                            <option value="CSQ-ResNet34-64"></option>
+                            <option value="CSQ-ResNet50-64"></option>
+                            <option value="CSQ-Vgg16-64"></option>
+                            <option value="CSQ-Vgg19-64"></option>
+                            <option value="CSQ-ResNet34-32"></option>
+                            <option value="CSQ-ResNet50-32"></option>
+                            <option value="CSQ-Vgg16-32"></option>
+                            <option value="CSQ-Vgg19-32"></option>
+                            <option value="HashNet-ResNet50-64"></option>
+                            <option value="HashNet-Vgg16-64"></option>
+                        </datalist>
+                      </div>
+                      <div class="mb-3">
+                        <div class="form-label">选择检索系统（黑盒）</div>
+                        <input class="form-control" list="retrieval_system_black" id="system_black" name="system_black"
+                               placeholder="DEFAULT: CSQ-Vgg16-64"/>
+                        <datalist id="retrieval_system_black">
+                            <option value="CSQ-ResNet34-64"></option>
+                            <option value="CSQ-ResNet50-64"></option>
+                            <option value="CSQ-Vgg16-64"></option>
+                            <option value="CSQ-Vgg19-64"></option>
+                            <option value="CSQ-ResNet34-32"></option>
+                            <option value="CSQ-ResNet50-32"></option>
+                            <option value="CSQ-Vgg16-32"></option>
+                            <option value="CSQ-Vgg19-32"></option>
+                            <option value="HashNet-ResNet50-64"></option>
+                            <option value="HashNet-Vgg16-64"></option>
+                        </datalist>
+                      </div>
+{#                      <div class="mb-3">#}
+{#                        <div class="form-label">选择检索topK</div>#}
+{#                        <input class="form-control" list="retrieval_topK" id="topK" name="topK"#}
+{#                               placeholder="Such as 10..."/>#}
+{#                        <datalist id="retrieval_topK">#}
+{#                            <option value="10"></option>#}
+{#                            <option value="20"></option>#}
+{#                            <option value="30"></option>#}
+{#                            <option value="50"></option>#}
+{#                            <option value="100"></option>#}
+{#                        </datalist>#}
+{#                      </div>#}
+{#                      <div class="mb-3">#}
+{#                            <div class="form-label">上传模型checkpoint (非必需)</div>#}
+{#                            <input type="file" class="form-control" id="ckpt_upload_decode" name="ckpt_upload_decode"/>#}
+{#                      </div>#}
+{#                      <div class="mb-3">#}
+{#                            <div class="form-label" >上传待检索的图像数据集</div>#}
+{#                            <input type="file" class="form-control" id="img_zip_upload_decode" name="img_zip_upload_decode"/>#}
+{#                      </div>#}
+                    </div>
+                    <div class="card-footer text-md-center">
+                      <button type="submit" class="btn btn-primary">开始检索</button>
+                    </div>
+
+                  </form>
+
+                </div>
+              </div>
+            </div>
+
+            {% if retrieval_ok == 'Y' %}
+            <div class="col-lg-6">
+                <div class="card">
+                  <div class="card-body">
+                    <h3 class="card-title">JPEG压缩（白盒）</h3>
+                    <div class="row row-cards">
+                    <div id="JPEG" class="chart-lg col-lg-12"></div>
+{#                    <div class="col-lg-2">#}
+{#                      <img id="img1" class="avatar avatar-lg" src="data:;base64,{{ pic_show[0] }}" alt=""/>#}
+{#                        <img style="margin-left: 28px;" src={{ url_for('static', filename='static/arrow.png') }} alt="↓"/>#}
+{#                      <img id="img2" class="avatar avatar-lg" src="data:;base64,{{ pic_show[1] }}" alt=""/>#}
+{#                    </div>#}
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                  <div class="card-body">
+                    <h3 class="card-title">JPEG压缩（黑盒）</h3>
+                    <div class="row row-cards">
+                    <div id="JPEG_black" class="chart-lg col-lg-12"></div>
+{#                    <div class="col-lg-2">#}
+{#                      <img id="img1" class="avatar avatar-lg" src="data:;base64,{{ pic_show[0] }}" alt=""/>#}
+{#                        <img style="margin-left: 28px;" src={{ url_for('static', filename='static/arrow.png') }} alt="↓"/>#}
+{#                      <img id="img2" class="avatar avatar-lg" src="data:;base64,{{ pic_show[1] }}" alt=""/>#}
+{#                    </div>#}
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card">
+                  <div class="card-body">
+                    <h3 class="card-title">图像受保护前检索效果（白盒）</h3>
+                    <div class="row row-cards">
+                        {% for i in range(org_white_imgs|length) %}
+                            <div class="col-2">
+                                <div class="col-12 mb-1">
+                                    <img class="card-img" src="data:;base64,{{ org_img_stream[i] }}" alt="Image" style="border: 2px solid;">
+                                </div>
+                            </div>
+                            {% for j in range(org_white_imgs[0]|length) %}
+                              <div class="col-2">
+                                <div class="col-12 mb-1">
+                                    <a href="data:;base64,{{ org_white_imgs[i][j] }}" download="image.jpg">
+                                        <img class="card-img" src="data:;base64,{{ org_white_imgs[i][j] }}" alt="Image" style="border: 2px solid {% if org_white_crt[i][j] == '1' %} green {% elif org_white_crt[i][j] == '0' %} red {% endif %};">
+                                    </a>
+                                </div>
+                              </div>
+                          {% endfor %}
+                        {% endfor %}
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card">
+                  <div class="card-body">
+                    <h3 class="card-title">图像受保护后检索效果（白盒）</h3>
+                    <div class="row row-cards">
+                        {% for i in range(per_white_imgs|length) %}
+                            <div class="col-2">
+                                <div class="col-12 mb-1">
+                                    <img class="card-img" src="data:;base64,{{ per_img_stream[i] }}" alt="Image" style="border: 2px solid;">
+                                </div>
+                            </div>
+                          {% for j in range(per_white_imgs[0]|length) %}
+                              <div class="col-2">
+                                <div class="col-12 mb-1">
+                                    <a href="data:;base64,{{ per_white_imgs[i][j] }}" download="image.jpg">
+                                        <img class="card-img" src="data:;base64,{{ per_white_imgs[i][j] }}" alt="Image" style="border: 2px solid {% if per_white_crt[i][j] == '1' %} green {% elif per_white_crt[i][j] == '0' %} red {% endif %};">
+                                    </a>
+                                </div>
+                              </div>
+                          {% endfor %}
+                        {% endfor %}
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card">
+                  <div class="card-body">
+                    <h3 class="card-title">图像受保护前检索效果（黑盒）</h3>
+                    <div class="row row-cards">
+                        {% for i in range(org_black_imgs|length) %}
+                            <div class="col-2">
+                                <div class="col-12 mb-1">
+                                    <img class="card-img" src="data:;base64,{{ org_img_stream[i] }}" alt="Image" style="border: 2px solid;">
+                                </div>
+                            </div>
+                            {% for j in range(org_black_imgs[0]|length) %}
+                              <div class="col-2">
+                                <div class="col-12 mb-1">
+                                    <a href="data:;base64,{{ org_black_imgs[i][j] }}" download="image.jpg">
+                                        <img class="card-img" src="data:;base64,{{ org_black_imgs[i][j] }}" alt="Image" style="border: 2px solid {% if org_black_crt[i][j] == '1' %} green {% elif org_black_crt[i][j] == '0' %} red {% endif %};">
+                                    </a>
+                                </div>
+                              </div>
+                          {% endfor %}
+                        {% endfor %}
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card">
+                  <div class="card-body">
+                    <h3 class="card-title">图像受保护后检索效果（黑盒）</h3>
+                    <div class="row row-cards">
+                        {% for i in range(per_black_imgs|length) %}
+                            <div class="col-2">
+                                <div class="col-12 mb-1">
+                                    <img class="card-img" src="data:;base64,{{ per_img_stream[i] }}" alt="Image" style="border: 2px solid;">
+                                </div>
+                            </div>
+                          {% for j in range(per_black_imgs[0]|length) %}
+                              <div class="col-2">
+                                <div class="col-12 mb-1">
+                                    <a href="data:;base64,{{ per_black_imgs[i][j] }}" download="image.jpg">
+                                        <img class="card-img" src="data:;base64,{{ per_black_imgs[i][j] }}" alt="Image" style="border: 2px solid {% if per_black_crt[i][j] == '1' %} green {% elif per_black_crt[i][j] == '0' %} red {% endif %};">
+                                    </a>
+                                </div>
+                              </div>
+                          {% endfor %}
+                        {% endfor %}
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+{#            <div class="col-lg-6">#}
+{#                <div class="card">#}
+{#                  <div class="card-body">#}
+{#                    <h3 class="card-title">图像尺寸重调</h3>#}
+{#                    <div id="RESIZE" class="chart-lg"></div>#}
+{#                  </div>#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{#            <div class="col-lg-5">#}
+{#                <div class="card">#}
+{#                  <div class="card-body">#}
+{#                    <h3 class="card-title">高斯模糊（KER=3）</h3>#}
+{#                    <div id="BLUR-KER-3" class="chart-lg"></div>#}
+{#                  </div>#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{#            <div class="col-lg-7">#}
+{#                <div class="card">#}
+{#                  <div class="card-body">#}
+{#                    <h3 class="card-title">高斯模糊（KER=5）</h3>#}
+{#                      <div class="row row-cards">#}
+{#                          <div id="BLUR-KER-5" class="chart-lg col-lg-10"></div>#}
+{#                          <div class="col-lg-2">#}
+{#                            <img id="img3" class="avatar avatar-lg" src="data:;base64,{{ pic_show[0] }}" alt=""/>#}
+{#                            <img style="margin-left: 28px;" src={{ url_for('static', filename='static/arrow.png') }} alt="↓"/>#}
+{#                            <img id="img4" class="avatar avatar-lg" src="data:;base64,{{ pic_show[2] }}" alt=""/>#}
+{#                          </div>#}
+{#                      </div>#}
+{#                  </div>#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{#            <div class="col-lg-5">#}
+{#                <div class="card">#}
+{#                  <div class="card-body">#}
+{#                    <h3 class="card-title">高斯模糊（KER=9）</h3>#}
+{#                    <div id="BLUR-KER-9" class="chart-lg"></div>#}
+{#                  </div>#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{#            <div class="col-lg-7">#}
+{#                <div class="card">#}
+{#                  <div class="card-body">#}
+{#                    <h3 class="card-title">高斯噪声</h3>#}
+{#                      <div class="row row-cards">#}
+{#                            <div class="col-lg-2">#}
+{#                            <img id="img5" class="avatar avatar-lg" src="data:;base64,{{ pic_show[0] }}" alt=""/>#}
+{#                            <img style="margin-left: 28px;" src={{ url_for('static', filename='static/arrow.png') }} alt="↓"/>#}
+{#                            <img id="img6" class="avatar avatar-lg" src="data:;base64,{{ pic_show[3] }}" alt=""/>#}
+{#                            </div>#}
+{#                            <div id="NOISE" class="chart-lg col-lg-10"></div>#}
+{#                      </div>#}
+{#                  </div>#}
+{#                </div>#}
+{#            </div>#}
+
+
+  <script>
+    json_data_1 = '{{ json_data_1|tojson }}';
+    console.log(json_data_1)
+    const obj_1 = eval(json_data_1);
+    console.log(obj_1)
+
+    document.addEventListener("DOMContentLoaded", function () {
+    window.ApexCharts && (new ApexCharts(document.getElementById('JPEG'), {
+        chart: {
+            type: "line",
+            fontFamily: 'inherit',
+            height: 240,
+            parentHeightOffset: 0,
+            toolbar: {
+                show: false,
+            },
+            animations: {
+                enabled: false
+            },
+
+        },
+        plotOptions: {
+            bar: {
+                columnWidth: '50%',
+            }
+        },
+        dataLabels: {
+            enabled: false,
+        },
+        fill: {
+            opacity: 1,
+        },
+        series: [{
+            name: obj_1[0].name,
+            data: obj_1[0].data
+        },{
+            name: obj_1[1].name,
+            data: obj_1[1].data
+        },{
+            name: obj_1[2].name,
+            data: obj_1[2].data
+        }],
+        tooltip: {
+            theme: 'dark'
+        },
+        grid: {
+            padding: {
+                top: -20,
+                right: 0,
+                left: -4,
+                bottom: -4
+            },
+            strokeDashArray: 4,
+            xaxis: {
+                lines: {
+                    show: true
+                }
+            },
+        },
+        xaxis: {
+            labels: {
+                padding: 0,
+            },
+            tooltip: {
+                enabled: false
+            },
+            axisBorder: {
+                show: false,
+            },
+            //type: 'number',
+        },
+        yaxis: {
+                min: 0,
+                max: 100,
+                tickAmount: 5,
+                labels: {
+                    formatter: function (value) {
+                        return value.toFixed(0); // 保留两位小数
+                    },
+                    padding: 4
+                },
+                scale: true
+        },
+        labels: [
+            'N/A', '90', '80', '70', '60', '50', '40', '30'
+        ],
+        colors: [tabler.getColor("green"), tabler.getColor("red", 0.8), tabler.getColor("primary")],
+        legend: {
+            show: true,
+        },
+    })).render();
+  });
+  </script>
+
+  <script>
+    json_data_2 = '{{ json_data_2|tojson }}';
+    console.log(json_data_2)
+    const obj_2 = eval(json_data_2);
+    console.log(obj_2)
+
+    document.addEventListener("DOMContentLoaded", function () {
+    window.ApexCharts && (new ApexCharts(document.getElementById('JPEG_black'), {
+        chart: {
+            type: "line",
+            fontFamily: 'inherit',
+            height: 240,
+            parentHeightOffset: 0,
+            toolbar: {
+                show: false,
+            },
+            animations: {
+                enabled: false
+            },
+
+        },
+        plotOptions: {
+            bar: {
+                columnWidth: '50%',
+            }
+        },
+        dataLabels: {
+            enabled: false,
+        },
+        fill: {
+            opacity: 1,
+        },
+        series: [{
+            name: obj_2[0].name,
+            data: obj_2[0].data
+        },{
+            name: obj_2[1].name,
+            data: obj_2[1].data
+        },{
+            name: obj_2[2].name,
+            data: obj_2[2].data
+        }],
+        tooltip: {
+            theme: 'dark'
+        },
+        grid: {
+            padding: {
+                top: -20,
+                right: 0,
+                left: -4,
+                bottom: -4
+            },
+            strokeDashArray: 4,
+            xaxis: {
+                lines: {
+                    show: true
+                }
+            },
+        },
+        xaxis: {
+            labels: {
+                padding: 0,
+            },
+            tooltip: {
+                enabled: false
+            },
+            axisBorder: {
+                show: false,
+            },
+            //type: 'number',
+        },
+        yaxis: {
+                min: 0,
+                max: 100,
+                tickAmount: 5,
+                labels: {
+                    formatter: function (value) {
+                        return value.toFixed(0); // 保留两位小数
+                    },
+                    padding: 4
+                },
+                scale: true
+        },
+        labels: [
+            'N/A', '90', '80', '70', '60', '50', '40', '30'
+        ],
+        colors: [tabler.getColor("green"), tabler.getColor("red", 0.8), tabler.getColor("primary")],
+        legend: {
+            show: true,
+        },
+    })).render();
+  });
+  </script>
+{#    <script>#}
+{#        json_data_3 = '{{ json_data_3|tojson }}';#}
+{#        console.log(json_data_3)#}
+{#        var obj_3 = eval(json_data_3);#}
+{#        console.log(obj_3)#}
+{#        document.addEventListener("DOMContentLoaded", function () {#}
+{#      	window.ApexCharts && (new ApexCharts(document.getElementById('BLUR-KER-3'), {#}
+{#      		chart: {#}
+{#      			type: "line",#}
+{#      			fontFamily: 'inherit',#}
+{#      			height: 240,#}
+{#      			parentHeightOffset: 0,#}
+{#      			toolbar: {#}
+{#      				show: false,#}
+{#      			},#}
+{#      			animations: {#}
+{#      				enabled: false#}
+{#      			},#}
+{#      		},#}
+{#      		plotOptions: {#}
+{#      			bar: {#}
+{#      				columnWidth: '50%',#}
+{#      			}#}
+{#      		},#}
+{#      		dataLabels: {#}
+{#      			enabled: false,#}
+{#      		},#}
+{#      		fill: {#}
+{#      			opacity: 1,#}
+{#      		},#}
+{#      		series: [{#}
+{#                name: obj_3[0].name,#}
+{#                data: obj_3[0].data#}
+{#            },{#}
+{#      			name: obj_3[1].name,#}
+{#                data: obj_3[1].data#}
+{#            },{#}
+{#      			name: obj_3[2].name,#}
+{#                data: obj_3[2].data#}
+{#            },{#}
+{#      			name: obj_3[3].name,#}
+{#                data: obj_3[3].data#}
+{#            }],#}
+{#      		tooltip: {#}
+{#      			theme: 'dark'#}
+{#      		},#}
+{#      		grid: {#}
+{#      			padding: {#}
+{#      				top: -20,#}
+{#      				right: 0,#}
+{#      				left: -4,#}
+{#      				bottom: -4#}
+{#      			},#}
+{#      			strokeDashArray: 4,#}
+{#      			xaxis: {#}
+{#      				lines: {#}
+{#      					show: true#}
+{#      				}#}
+{#      			},#}
+{#      		},#}
+{#      		xaxis: {#}
+{#      			labels: {#}
+{#      				padding: 0,#}
+{#      			},#}
+{#      			tooltip: {#}
+{#      				enabled: false#}
+{#      			},#}
+{#      			axisBorder: {#}
+{#      				show: false,#}
+{#      			},#}
+{#      			//type: 'number',#}
+{#      		},#}
+{#      		yaxis: {#}
+{#      			labels: {#}
+{#      				padding: 4#}
+{#      			},#}
+{#                scale:true#}
+{#      		},#}
+{#      		labels: [#}
+{#      			'1', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100'#}
+{#            ],#}
+{#      		colors: [tabler.getColor("primary"), tabler.getColor("primary", 0.7)#}
+{#                , tabler.getColor("green", 0.8), tabler.getColor("red", 0.8)],#}
+{#      		legend: {#}
+{#      			show: true,#}
+{#      		},#}
+{#      	})).render();#}
+{#      });#}
+{#    </script>#}
+{#    <script>#}
+{#        json_data_4 = '{{ json_data_4|tojson }}';#}
+{#        console.log(json_data_4)#}
+{#        var obj_4 = eval(json_data_4);#}
+{#        console.log(obj_4)#}
+{#        document.addEventListener("DOMContentLoaded", function () {#}
+{#      	window.ApexCharts && (new ApexCharts(document.getElementById('BLUR-KER-5'), {#}
+{#      		chart: {#}
+{#      			type: "line",#}
+{#      			fontFamily: 'inherit',#}
+{#      			height: 240,#}
+{#      			parentHeightOffset: 0,#}
+{#      			toolbar: {#}
+{#      				show: false,#}
+{#      			},#}
+{#      			animations: {#}
+{#      				enabled: false#}
+{#      			},#}
+{#      		},#}
+{#      		plotOptions: {#}
+{#      			bar: {#}
+{#      				columnWidth: '50%',#}
+{#      			}#}
+{#      		},#}
+{#      		dataLabels: {#}
+{#      			enabled: false,#}
+{#      		},#}
+{#      		fill: {#}
+{#      			opacity: 1,#}
+{#      		},#}
+{#      		series: [{#}
+{#                name: obj_4[0].name,#}
+{#                data: obj_4[0].data#}
+{#            },{#}
+{#      			name: obj_4[1].name,#}
+{#                data: obj_4[1].data#}
+{#            },{#}
+{#      			name: obj_4[2].name,#}
+{#                data: obj_4[2].data#}
+{#            },{#}
+{#      			name: obj_4[3].name,#}
+{#                data: obj_4[3].data#}
+{#            }],#}
+{#      		tooltip: {#}
+{#      			theme: 'dark'#}
+{#      		},#}
+{#      		grid: {#}
+{#      			padding: {#}
+{#      				top: -20,#}
+{#      				right: 0,#}
+{#      				left: -4,#}
+{#      				bottom: -4#}
+{#      			},#}
+{#      			strokeDashArray: 4,#}
+{#      			xaxis: {#}
+{#      				lines: {#}
+{#      					show: true#}
+{#      				}#}
+{#      			},#}
+{#      		},#}
+{#      		xaxis: {#}
+{#      			labels: {#}
+{#      				padding: 0,#}
+{#      			},#}
+{#      			tooltip: {#}
+{#      				enabled: false#}
+{#      			},#}
+{#      			axisBorder: {#}
+{#      				show: false,#}
+{#      			},#}
+{#      			//type: 'number',#}
+{#      		},#}
+{#      		yaxis: {#}
+{#      			labels: {#}
+{#      				padding: 4#}
+{#      			},#}
+{#                scale:true#}
+{#      		},#}
+{#      		labels: [#}
+{#      			'1', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100'#}
+{#            ],#}
+{#      		colors: [tabler.getColor("primary"), tabler.getColor("primary", 0.7)#}
+{#                , tabler.getColor("green", 0.8), tabler.getColor("red", 0.8)],#}
+{#      		legend: {#}
+{#      			show: true,#}
+{#      		},#}
+{#      	})).render();#}
+{#      });#}
+{#    </script>#}
+{#    <script>#}
+{#        json_data_5 = '{{ json_data_5|tojson }}';#}
+{#        console.log(json_data_5)#}
+{#        var obj_5 = eval(json_data_5);#}
+{#        console.log(obj_5)#}
+{#        document.addEventListener("DOMContentLoaded", function () {#}
+{#      	window.ApexCharts && (new ApexCharts(document.getElementById('BLUR-KER-9'), {#}
+{#      		chart: {#}
+{#      			type: "line",#}
+{#      			fontFamily: 'inherit',#}
+{#      			height: 240,#}
+{#      			parentHeightOffset: 0,#}
+{#      			toolbar: {#}
+{#      				show: false,#}
+{#      			},#}
+{#      			animations: {#}
+{#      				enabled: false#}
+{#      			},#}
+{#      		},#}
+{#      		plotOptions: {#}
+{#      			bar: {#}
+{#      				columnWidth: '50%',#}
+{#      			}#}
+{#      		},#}
+{#      		dataLabels: {#}
+{#      			enabled: false,#}
+{#      		},#}
+{#      		fill: {#}
+{#      			opacity: 1,#}
+{#      		},#}
+{#      		series: [{#}
+{#                name: obj_5[0].name,#}
+{#                data: obj_5[0].data#}
+{#            },{#}
+{#      			name: obj_5[1].name,#}
+{#                data: obj_5[1].data#}
+{#            },{#}
+{#      			name: obj_5[2].name,#}
+{#                data: obj_5[2].data#}
+{#            },{#}
+{#      			name: obj_5[3].name,#}
+{#                data: obj_5[3].data#}
+{#            }],#}
+{#      		tooltip: {#}
+{#      			theme: 'dark'#}
+{#      		},#}
+{#      		grid: {#}
+{#      			padding: {#}
+{#      				top: -20,#}
+{#      				right: 0,#}
+{#      				left: -4,#}
+{#      				bottom: -4#}
+{#      			},#}
+{#      			strokeDashArray: 4,#}
+{#      			xaxis: {#}
+{#      				lines: {#}
+{#      					show: true#}
+{#      				}#}
+{#      			},#}
+{#      		},#}
+{#      		xaxis: {#}
+{#      			labels: {#}
+{#      				padding: 0,#}
+{#      			},#}
+{#      			tooltip: {#}
+{#      				enabled: false#}
+{#      			},#}
+{#      			axisBorder: {#}
+{#      				show: false,#}
+{#      			},#}
+{#      			//type: 'number',#}
+{#      		},#}
+{#      		yaxis: {#}
+{#      			labels: {#}
+{#      				padding: 4#}
+{#      			},#}
+{#                scale:true#}
+{#      		},#}
+{#      		labels: [#}
+{#      			'1', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100'#}
+{#            ],#}
+{#      		colors: [tabler.getColor("primary"), tabler.getColor("primary", 0.7)#}
+{#                , tabler.getColor("green", 0.8), tabler.getColor("red", 0.8)],#}
+{#      		legend: {#}
+{#      			show: true,#}
+{#      		},#}
+{#      	})).render();#}
+{#      });#}
+{#    </script>#}
+{#    <script>#}
+{#        json_data_6 = '{{ json_data_6|tojson }}';#}
+{#        console.log(json_data_6)#}
+{#        var obj_6 = eval(json_data_6);#}
+{#        console.log(obj_6)#}
+{#        document.addEventListener("DOMContentLoaded", function () {#}
+{#      	window.ApexCharts && (new ApexCharts(document.getElementById('NOISE'), {#}
+{#      		chart: {#}
+{#      			type: "line",#}
+{#      			fontFamily: 'inherit',#}
+{#      			height: 240,#}
+{#      			parentHeightOffset: 0,#}
+{#      			toolbar: {#}
+{#      				show: false,#}
+{#      			},#}
+{#      			animations: {#}
+{#      				enabled: false#}
+{#      			},#}
+{#      		},#}
+{#      		plotOptions: {#}
+{#      			bar: {#}
+{#      				columnWidth: '50%',#}
+{#      			}#}
+{#      		},#}
+{#      		dataLabels: {#}
+{#      			enabled: false,#}
+{#      		},#}
+{#      		fill: {#}
+{#      			opacity: 1,#}
+{#      		},#}
+{#      		series: [{#}
+{#                name: obj_6[0].name,#}
+{#                data: obj_6[0].data#}
+{#            },{#}
+{#      			name: obj_6[1].name,#}
+{#                data: obj_6[1].data#}
+{#            },{#}
+{#      			name: obj_6[2].name,#}
+{#                data: obj_6[2].data#}
+{#            },{#}
+{#      			name: obj_6[3].name,#}
+{#                data: obj_6[3].data#}
+{#            }],#}
+{#      		tooltip: {#}
+{#      			theme: 'dark'#}
+{#      		},#}
+{#      		grid: {#}
+{#      			padding: {#}
+{#      				top: -20,#}
+{#      				right: 0,#}
+{#      				left: -4,#}
+{#      				bottom: -4#}
+{#      			},#}
+{#      			strokeDashArray: 4,#}
+{#      			xaxis: {#}
+{#      				lines: {#}
+{#      					show: true#}
+{#      				}#}
+{#      			},#}
+{#      		},#}
+{#      		xaxis: {#}
+{#      			labels: {#}
+{#      				padding: 0,#}
+{#      			},#}
+{#      			tooltip: {#}
+{#      				enabled: false#}
+{#      			},#}
+{#      			axisBorder: {#}
+{#      				show: false,#}
+{#      			},#}
+{#      			//type: 'number',#}
+{#      		},#}
+{#      		yaxis: {#}
+{#      			labels: {#}
+{#      				padding: 4#}
+{#      			},#}
+{#                scale:true#}
+{#      		},#}
+{#      		labels: [#}
+{#      			'0.001', '0.002', '0.003', '0.004', '0.005'#}
+{#            ],#}
+{#      		colors: [tabler.getColor("primary"), tabler.getColor("primary", 0.7)#}
+{#                , tabler.getColor("green", 0.8), tabler.getColor("red", 0.8)],#}
+{#      		legend: {#}
+{#      			show: true,#}
+{#      		},#}
+{#      	})).render();#}
+{#      });#}
+    </script>
+            {% endif %}
+
+
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+    </div>
+
+
+
+
+
+  </div>
+  <!-- Libs JS -->
+  <script src="{{ url_for('static', filename='dist/libs/nouislider/dist/nouislider.min.js')}}" defer></script>
+  <script src="{{ url_for('static', filename='dist/libs/litepicker/dist/litepicker.js')}}" defer></script>
+  <script src="{{ url_for('static', filename='dist/libs/tom-select/dist/js/tom-select.base.min.js')}}" defer></script>
+  <!-- Tabler Core -->
+  <script src="{{ url_for('static', filename='dist/js/tabler.min.js')}}" defer></script>
+  <script src="{{ url_for('static', filename='dist/js/demo.min.js')}}" defer></script>
+
+  <!-- Libs JS -->
+    <script src="{{ url_for('static', filename='dist/libs/apexcharts/dist/apexcharts.min.js')}}" defer></script>
+    <script src="{{ url_for('static', filename='dist/libs/jsvectormap/dist/js/jsvectormap.min.js')}}" defer></script>
+    <script src="{{ url_for('static', filename='dist/libs/jsvectormap/dist/maps/world.js')}}" defer></script>
+    <script src="{{ url_for('static', filename='dist/libs/jsvectormap/dist/maps/world-merc.js')}}" defer></script>
+    <!-- Tabler Core -->
+    <script src="{{ url_for('static', filename='dist/js/tabler.min.js')}}" defer></script>
+    <script src="{{ url_for('static', filename='dist/js/demo.min.js')}}" defer></script>
+
+
+
+
+
+
+
+
+
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	 window.noUiSlider && (noUiSlider.create(document.getElementById('range-simple'), {
+    			  start: 20,
+    			  connect: [true, false],
+    			  step: 10,
+    			  range: {
+    				  min: 0,
+    				  max: 100
+    			  }
+    	 }));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	 window.noUiSlider && (noUiSlider.create(document.getElementById('range-connect'), {
+    			  start: [60, 90],
+    			  connect: [false, true, false],
+    			  step: 10,
+    			  range: {
+    				  min: 0,
+    				  max: 100
+    			  }
+    	 }));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	 window.noUiSlider && (noUiSlider.create(document.getElementById('range-color'), {
+    			  start: 40,
+    			  connect: [true, false],
+    			  step: 10,
+    			  range: {
+    				  min: 0,
+    				  max: 100
+    			  }
+    	 }));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	window.Litepicker && (new Litepicker({
+    		element: document.getElementById('datepicker-default'),
+    		buttonText: {
+    			previousMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" /></svg>`,
+    			nextMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>`,
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	window.Litepicker && (new Litepicker({
+    		element: document.getElementById('datepicker-icon'),
+    		buttonText: {
+    			previousMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" /></svg>`,
+    			nextMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>`,
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	window.Litepicker && (new Litepicker({
+    		element: document.getElementById('datepicker-icon-prepend'),
+    		buttonText: {
+    			previousMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" /></svg>`,
+    			nextMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>`,
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	window.Litepicker && (new Litepicker({
+    		element: document.getElementById('datepicker-inline'),
+    		buttonText: {
+    			previousMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" /></svg>`,
+    			nextMonth: `<!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>`,
+    		},
+    		inlineMode: true,
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-tags'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-tags-advanced'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-users'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-optgroups'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-people'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-countries'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-labels'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-countries-valid'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    // @formatter:off
+    document.addEventListener("DOMContentLoaded", function () {
+    	var el;
+    	window.TomSelect && (new TomSelect(el = document.getElementById('select-countries-invalid'), {
+    		copyClassesToDropdown: false,
+    		dropdownClass: 'dropdown-menu ts-dropdown',
+    		optionClass:'dropdown-item',
+    		controlInput: '<input>',
+    		render:{
+    			item: function(data,escape) {
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    			option: function(data,escape){
+    				if( data.customProperties ){
+    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+    				}
+    				return '<div>' + escape(data.text) + '</div>';
+    			},
+    		},
+    	}));
+    });
+    // @formatter:on
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+    	let sliderTriggerList = [].slice.call(document.querySelectorAll("[data-slider]"));
+    	sliderTriggerList.map(function (sliderTriggerEl) {
+    		let options = {};
+    		if (sliderTriggerEl.getAttribute("data-slider")) {
+    			options = JSON.parse(sliderTriggerEl.getAttribute("data-slider"));
+    		}
+    		let slider = noUiSlider.create(sliderTriggerEl, options);
+    		if (options['js-name']) {
+    			window[options['js-name']] = slider;
+    		}
+    	});
+    });
+  </script>
+
+  <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var ckptUploadSection = document.getElementById('user_upload_section_multi');
+            var prvdNoiseSection = document.getElementById('prvd_noise_section_multi');
+            var ckptUploadRadio = document.getElementById('user_upload_radio_multi');
+            var prvdNoiseRadio = document.getElementById('prvd_noise_radio_multi');
+            {#print(ckptUploadSection, prvdNoiseSection, ckptUploadRadio, prvdNoiseRadio)#}
+            // 初始状态下，根据用户选择显示相关部分
+            if (ckptUploadRadio.checked) {
+                ckptUploadSection.style.display = 'block';
+                prvdNoiseSection.style.display = 'none';
+            } else if (prvdNoiseRadio.checked) {
+                ckptUploadSection.style.display = 'none';
+                prvdNoiseSection.style.display = 'block';
+            }
+
+            // 监听扰动类型选择变化事件
+            ckptUploadRadio.addEventListener('change', function() {
+                if (this.checked) {
+                    ckptUploadSection.style.display = 'block';
+                    prvdNoiseSection.style.display = 'none';
+                }
+            });
+
+            prvdNoiseRadio.addEventListener('change', function() {
+                if (this.checked) {
+                    ckptUploadSection.style.display = 'none';
+                    prvdNoiseSection.style.display = 'block';
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
